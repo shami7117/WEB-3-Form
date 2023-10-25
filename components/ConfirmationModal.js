@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
+import { Button, Modal, notification } from 'antd';
 
 function ConfirmationModal() {
     const [walletConnected, setWalletConnected] = useState(false);
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+    const handleOk = () => {
+        setIsModalOpen(false);
+    };
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
     const connectWallet = async () => {
         if (window.ethereum) {
             try {
                 if (walletConnected) {
                     // If already connected, show confirmation modal before disconnecting
-                    setShowConfirmationModal(true);
+                    setIsModalOpen(true);
                 } else {
                     // Request Metamask to connect
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -20,8 +30,14 @@ function ConfirmationModal() {
 
                         // Display the connected address with anonymity
                         const connectedAddress = window.ethereum.selectedAddress;
-                        alert(`Connected to MetaMask with address: ${connectedAddress}`);
+                        // alert(`Connected to MetaMask with address: ${connectedAddress}`);
+                        notification.open({
+                            duration: 2,
 
+                            type: "success",
+                            message: `Connected to MetaMask with address: ${connectedAddress}`,
+                            placement: "top"
+                        })
                         // You can perform further operations with the connected wallet here.
                     }
                 }
@@ -29,15 +45,29 @@ function ConfirmationModal() {
                 console.error('Wallet connection error:', error);
             }
         } else {
-            alert('MetaMask not detected. Please install or enable MetaMask extension.');
+            // alert('MetaMask not detected. Please install or enable MetaMask extension.');
+            notification.open({
+                duration: 2,
+
+                type: "error",
+                message: "MetaMask not detected. Please install or enable MetaMask extension.",
+                placement: "top"
+            })
         }
     };
 
     const disconnectWallet = () => {
         // Perform any necessary wallet disconnection actions here
         setWalletConnected(false);
-        setShowConfirmationModal(false);
-        alert("Wallet disconnected");
+        setIsModalOpen(false);
+        notification.open({
+            duration: 2,
+
+            type: "success",
+            message: "Wallet disconnected",
+            placement: "top"
+        })
+        // alert("Wallet disconnected");
     };
 
     return (
@@ -50,8 +80,9 @@ function ConfirmationModal() {
                 {walletConnected ? 'Wallet Connected' : 'Connect Wallet'}
             </button>
 
+
             {walletConnected && (
-                <span id="connected-address">
+                <span id="connected-address text-[#000]">
                     Address connected: {window.ethereum.selectedAddress.slice(0, 5) + '...' + window.ethereum.selectedAddress.slice(-4)}
                 </span>
             )}
@@ -73,6 +104,10 @@ function ConfirmationModal() {
                     </div>
                 </div>
             </div>
+            <Modal on title="Disconnect Wallet" okText="Yes" cancelText="No" open={isModalOpen} onOk={disconnectWallet} onCancel={handleCancel}>
+                <p>Do you want to disconnect your wallet?</p>
+
+            </Modal>
         </div>
     );
 }
