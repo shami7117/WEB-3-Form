@@ -16,7 +16,14 @@ export default function HandleForm() {
     const [isInvalid, setIsInvalid] = useState(false);
     const [isInscribeVisible, setIsInscribeVisible] = useState(false);
     const [isList, setIsList] = useState([]);
+    const [isButtonVisible, setIsButtonVisible] = useState(false);
 
+
+    const [subhandleMintButtonOn1, setSubhandleMintButtonOn] = useState(false);
+
+    const handleSubhandleMintButtonClick = () => {
+        setSubhandleMintButtonOn(!subhandleMintButtonOn1);
+    };
 
     useEffect(() => {
         // Initialize the bot script
@@ -78,7 +85,7 @@ export default function HandleForm() {
     function updateCharacterCount() {
         const handleInput = document.getElementById("handle-input").value;
         const charCount = document.getElementById("char-count");
-        // const handlePreview = document.getElementById("handle-preview-text");
+        const handlePreview = document.getElementById("handle-preview-text");
         const yearsInput = parseInt(document.getElementById("years-input").value, 10);
 
         const isSubhandle = determineSubhandle(handleInput);
@@ -122,13 +129,11 @@ export default function HandleForm() {
         // setCharCount(rBTCAmount);
 
         if (validateInput(handleInput)) {
-            setDisplayHandleInput(`${handleInput}.₿`);
-
-            // handlePreview.style.color = "white";
+            handlePreview.textContent = `${handleInput}.₿`;
+            handlePreview.style.color = "white";
         } else {
-            setDisplayHandleInput("Invalid input. Please use only lowercase letters, digits, dots, and hyphens, and ensure they are not at the beginning or end of the input.");
-            // handlePreview.textContent = "Invalid input. Please use only lowercase letters, digits, dots, and hyphens, and ensure they are not at the beginning or end of the input.";
-            // handlePreview.style.color = "white";
+            handlePreview.textContent = "Invalid input. Please use only lowercase letters, digits, dots, and hyphens, and ensure they are not at the beginning or end of the input.";
+            handlePreview.style.color = "white";
         }
 
         placeholderPreview();
@@ -245,7 +250,7 @@ export default function HandleForm() {
             // Handle input is blank, reset the button and error message
             button.textContent = "Register Handle";
             button.disabled = true;
-            button.style.backgroundColor = "#ccc";
+            // button.style.backgroundColor = "#ccc";
             // handlePreview.textContent = "";
             setDisplayHandleInput("");
         }
@@ -322,7 +327,7 @@ export default function HandleForm() {
             handleInput.value = handleWithoutSuffix;
 
             // Update the live preview
-            updateCharacterCount();
+            // updateCharacterCount();
             updateLivePreview();
 
             // Update the button text based on whether it's a handle or subhandle
@@ -355,9 +360,9 @@ export default function HandleForm() {
 
     const handleInputChange = (e) => {
         setDisplayHandleInput(e.target.value)
-
-        setHandleInput(e.target.value);
         updateCharacterCount();
+        updateInputWithPunycode();
+        setHandleInput(e.target.value);
 
         // updateButton();
         if (handleInput === 'Renew Handle' || handleInput === 'Renew Subhandle') {
@@ -470,6 +475,7 @@ export default function HandleForm() {
         confirmButton.textContent = "Confirm";
         confirmButton.type = "button";
         confirmButton.style.marginBlockEnd = "10px";
+        confirmButton.style.width = "100%";
         confirmButton.style.marginLeft = "10px";
         // confirmButton.style.marginBottom = "30px";
 
@@ -541,7 +547,7 @@ export default function HandleForm() {
 
     useEffect(() => {
         if (isInscribeVisible) {
-            createInscribeButton();
+            // createInscribeButton();
         }
     }, [isInscribeVisible]);
 
@@ -656,7 +662,8 @@ export default function HandleForm() {
     };
     useEffect(() => {
         if (subhandleMintButtonOn) {
-            createActivateButton();
+
+            // createActivateButton();
         }
     },);
     const observeManageHandleButtonChanges = () => {
@@ -668,7 +675,7 @@ export default function HandleForm() {
                         const buttonText = mutation.addedNodes[0].textContent;
                         if (buttonText === "Renew Handle") {
                             // Show the "Subhandle Mint" button
-                            createSubhandleMintButton();
+                            // createSubhandleMintButton();
                             subhandleMintButtonCreated = true;
 
                             // Show the "Activate zkERC-6551" button
@@ -703,13 +710,33 @@ export default function HandleForm() {
             observer.observe(manageHandleButton, observerConfig);
         }
     };
+    const [isInscribeButtonVisible, setIsInscribeButtonVisible] = useState(false);
+
+    useEffect(() => {
+        // Add an event listener to determine when the "Renew Handle" or "Renew Subhandle" button is present
+        const handleDOMSubtreeModified = () => {
+            const renewButton = document.getElementById("manage-handle-button");
+            if (renewButton && (renewButton.textContent === "Renew Handle" || renewButton.textContent === "Renew Subhandle")) {
+                setIsInscribeButtonVisible(true);
+            } else {
+                setIsInscribeButtonVisible(false);
+            }
+        };
+
+        document.addEventListener("DOMSubtreeModified", handleDOMSubtreeModified);
+
+        // Clean up the event listener when the component unmounts
+        return () => {
+            document.removeEventListener("DOMSubtreeModified", handleDOMSubtreeModified);
+        };
+    }, []);
 
     useEffect(() => {
         observeManageHandleButtonChanges();
     }, []);
 
-    return (<div className="pt-[60px] pb-[30px]">
-        <main className="max-w-[600px] relative  flex flex-col justify-start items-center">
+    return (<div className="pt-[60px] ">
+        <main className="max-w-[450px] relative  flex flex-col justify-start items-center">
             <h1 className="font-bold text-[32px]">HNDL Registrar</h1>
             <div className="h-[1px]"></div>
 
@@ -717,7 +744,7 @@ export default function HandleForm() {
             <div className="preview-container w-full">
                 <div className={`${imageChecked ? "preview-square" : "preview-square3"}`}>
                     <div className="handle-text" id="handle-text"></div>
-                    <p className="handle-preview">{DisplayHandleInput}</p>
+                    <p class="handle-preview"><span id="handle-preview-text"></span></p>
                     <div id="square" className=" absolute top-[10px] left-[10px] w-[10px] h-[10px]"></div>
 
                 </div>
@@ -741,7 +768,7 @@ export default function HandleForm() {
                 />
             </div>
 
-            <div className="form-container py-8 w-full  flex flex-col">
+            <div className="form-container w-full  flex flex-col">
                 <label htmlFor="handle-input">Your Web3 Handle:</label>
                 <input
                     type="text"
@@ -760,12 +787,13 @@ export default function HandleForm() {
                     <input
                         type="number"
                         id="years-input"
-                        className=""
+                        className="w-full mr-2 "
                         placeholder="1"
                         value={yearsInput}
                         min="1"
                         onChange={(e) => {
                             setYearsInput(e.target.value);
+                            yearsInputChange(e);
                             checkYearsInputValidity(e);
                         }}
                     />
@@ -782,7 +810,60 @@ export default function HandleForm() {
                     </button>
 
 
+
                 </div>
+
+
+                <div className="grid grid-cols-2 mb-2 gap-x-4 ">
+                    {isInscribeButtonVisible && <button
+                        // onClick={handleActivateButtonClick}
+                        style={{
+                            // position: 'absolute',
+                            // bottom: '8px',
+                            // left: '230px',
+                            // display: isButtonVisible ? 'block' : 'none',
+                        }}
+                        id="activate-button"
+                        type="button"
+                    >
+                        Activate zkERC-6551
+                    </button>}
+
+                    {isInscribeButtonVisible && (
+                        <button
+                            onClick={() => {
+                                // Handle the "Inscribe Ordinal" button click event
+                            }}
+                            style={{
+                                // position: 'absolute',
+                                // right: '0px',
+                            }}
+                            className="w-full "
+                            id="inscribe-button"
+                            type="button"
+                        >
+                            Inscribe Ordinal
+                        </button>
+                    )}
+
+                </div>
+                {
+                    isInscribeButtonVisible && <button
+                        onClick={handleSubhandleMintButtonClick}
+                        className="SubhandleMint w-full "
+                        style={{
+                            // position: 'absolute',
+                            // bottom: '8px',
+                            // left: '30px',
+                            // whiteSpace: 'nowrap',
+                        }}
+                        id="subhandle-mint-button"
+                        type="button"
+                    >
+                        {subhandleMintButtonOn1 ? 'Subhandle Mint (On)' : 'Subhandle Mint (Off)'}
+                    </button>
+                }
+
             </div>
             <p className="invalid-message" id="error-message"></p>
 
@@ -793,12 +874,13 @@ export default function HandleForm() {
             <h2 className="font-bold">My Handles</h2>
             {isList.map((item) => {
                 return <ul className="hover:bg-[#007bff] hover:text-[#fff] cursor-pointer p-1 rounded-[5px]" onClick={(e) => {
+                    // 1 = true
                     handleInputClick();
                     updatePreviewOnItemClick(e);
                     handleListItemClick(e)
-                    createInscribeButton();
-                    createSubhandleMintButton();
-                    createActivateButton();
+                    // createInscribeButton();
+                    // createSubhandleMintButton();
+                    // createActivateButton();
                 }} id="my-handles-list text-[#000]">{item}
                 </ul>
             })}
