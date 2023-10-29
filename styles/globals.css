@@ -146,6 +146,7 @@ h1 {
   font-weight: bold;
   color: white;
   text-align: center;
+  width: 100%;
 }
 
 .cost-estimate {

@@ -131,6 +131,8 @@ export default function HandleForm() {
         if (validateInput(handleInput)) {
             handlePreview.textContent = `${handleInput}.₿`;
             handlePreview.style.color = "white";
+            placeholderPreview();
+
         } else {
             handlePreview.textContent = "Invalid input. Please use only lowercase letters, digits, dots, and hyphens, and ensure they are not at the beginning or end of the input.";
             handlePreview.style.color = "white";
@@ -144,19 +146,19 @@ export default function HandleForm() {
     // Function to update button text and enable/disable based on input
     function placeholderPreview() {
 
-        // const handleInput = document.getElementById("handle-input").value;
+        const handleInput = document.getElementById("handle-input").value;
         const button = document.getElementById("manage-handle-button");
-        // const handlePreview = document.getElementById("handle-preview-text");
+        const handlePreview = document.getElementById("handle-preview-text");
         const yearsInput = document.getElementById("years-input").value;
         let isSubhandle = false; // Initialize isSubhandle as false
 
         // if (yearsInput === "0" || yearsInput.trim() === "" || isNaN(yearsInput)) {
         //     button.disabled = true;
         //     button.style.backgroundColor = "#ccc";
-        //     document.quer{`Selector(".years-error" ${isInvalid?"block":"hidden"}`}.style.display = "block";
+        //     document.query{`Selector(".years-error" ${isInvalid?"block":"hidden"}`}.style.display = "block";
         // } else {
         //     button.style.backgroundColor = "#007BFF";
-        //     document.quer{`Selector(".years-error" ${isInvalid?"block":"hidden"}`}.style.display = "none";
+        //     document.quert{`Selector(".years-error" ${isInvalid?"block":"hidden"}`}.style.display = "none";
         // }
 
         // Check if the handle input contains a dot (.) indicating a subhandle
@@ -204,12 +206,10 @@ export default function HandleForm() {
                 const decodedRemainingText = punycode.toUnicode(decodedParts.slice(1).join(".")); // Join the remaining decoded parts
 
                 const decodedSubhandle = `${decodedSubhandleText}.`;
-                setDisplayHandleInput(prevHandleInput => prevHandleInput + `${decodedSubhandle} ${decodedRemainingText}.₿`);
-
+                handlePreview.innerHTML = `<span style="color:#0074f2;">${decodedSubhandle}</span>${decodedRemainingText}.₿`;
             } else {
-                setDisplayHandleInput(prevHandleInput => prevHandleInput + `${decodedHandle}.₿`);
+                handlePreview.textContent = `${decodedHandle}.₿`;
             }
-
             // Calculate Unicode character count for sizing (text and Unicode)
             const textCharacterCount = Array.from(decodedHandle).filter(c => c.length === 1).length;
             const unicodeCharacterCount = Array.from(decodedHandle).filter(c => c.length > 1).length;
@@ -230,29 +230,30 @@ export default function HandleForm() {
 
             // Set font size based on both text and Unicode character counts
             const fontSize = calculateFontSize(textCharacterCount, unicodeCharacterCount);
-            // handlePreview.style.fontSize = fontSize;
+            handlePreview.style.fontSize = fontSize;
 
             if (validateInput(handleInput)) {
-                // handlePreview.style.color = "white";
+                handlePreview.style.color = "white";
+                // handlePreview.style.fontSize = "26px";
+
                 button.disabled = false;
             } else {
                 button.textContent = "Register Handle";
-                setDisplayHandleInput("Invalid input. Please use only lowercase letters, digits, dots, and hyphens, and ensure they are not at the beginning or end of the input.")
+                handlePreview.textContent = "Invalid input. Please use only lowercase letters, digits, dots, and hyphens, and ensure they are not at the beginning or end of the input.";
 
                 // Set a consistent font size for the error message
-                // handlePreview.style.fontSize = "16px";
+                handlePreview.style.fontSize = "16px";
 
                 button.disabled = true;
                 button.style.backgroundColor = "#ccc";
-                // handlePreview.style.color = "white";
+                handlePreview.style.color = "white";
             }
         } else {
             // Handle input is blank, reset the button and error message
             button.textContent = "Register Handle";
             button.disabled = true;
-            // button.style.backgroundColor = "#ccc";
-            // handlePreview.textContent = "";
-            setDisplayHandleInput("");
+            button.style.backgroundColor = "#ccc";
+            handlePreview.textContent = "";
         }
     }
 
@@ -327,7 +328,7 @@ export default function HandleForm() {
             handleInput.value = handleWithoutSuffix;
 
             // Update the live preview
-            // updateCharacterCount();
+            updateCharacterCount();
             updateLivePreview();
 
             // Update the button text based on whether it's a handle or subhandle
@@ -362,6 +363,8 @@ export default function HandleForm() {
         setDisplayHandleInput(e.target.value)
         updateCharacterCount();
         updateInputWithPunycode();
+        // placeholderPreview();
+
         setHandleInput(e.target.value);
 
         // updateButton();
@@ -745,7 +748,7 @@ export default function HandleForm() {
                 <div className={`${imageChecked ? "preview-square" : "preview-square3"}`}>
                     <div className="handle-text" id="handle-text"></div>
                     <p class="handle-preview"><span id="handle-preview-text"></span></p>
-                    <div id="square" className=" absolute top-[10px] left-[10px] w-[10px] h-[10px]"></div>
+                    <div id="square" className=" absolute top-[10px] left-[10px] w-full h-[10px]"></div>
 
                 </div>
             </div>
