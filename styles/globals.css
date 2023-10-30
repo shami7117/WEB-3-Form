@@ -132,7 +132,7 @@ h1 {
   background-image: url("placeholder3.png");
   background-size: cover;
   width: 100%;
-  height: 380px;
+  height: 300px;
   /* margin: 0 auto; */
   display: flex;
   flex-direction: column;
@@ -166,17 +166,25 @@ label {
   margin-bottom: 5px;
 }
 
-input[type="text"],
+input[type="text"] {
+  /* width: 98%; */
+  padding: 10px;
+  /* margin-bottom: 10px; */
+  height: 100%;
+  border: 1px solid #ccc;
+  border-radius: 0px;
+}
 input[type="number"] {
   /* width: 98%; */
-  padding: 3px;
-  margin-bottom: 10px;
+  padding: 1px;
+  /* margin-bottom: 10px; */
+  height: 100%;
   border: 1px solid #ccc;
   border-radius: 0px;
 }
 
 button {
-  background-color: #007bff;
+  /* background-color: #007bff; */
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -185,12 +193,12 @@ button {
 }
 
 button:hover {
-  background-color: #0056b3;
+  /* background-color: #0056b3; */
 }
 
 button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+  /* background-color: #ccc; */
+  /* cursor: not-allowed; */
 }
 
 /* Adjusted styling for the "My Handles" section */
@@ -298,13 +306,15 @@ button:disabled {
   /* margin-top: 3px; */
   /* padding: 5px; */
   /* width: 10px; */
+
   text-align: center;
 }
 
 /*register button*/
 #manage-handle-button {
-  padding: 2px;
+  padding: 1px;
   max-width: 110px;
+  margin-bottom: 7px;
   /* margin-left: 10px; */
   /* Add margin to separate the button from the input */
   /* width: 100px; */

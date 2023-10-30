@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import * as punycode from 'punycode';
 import { oortConfig } from '../oort-config';
 
-import { Button, Modal, notification } from 'antd';
+import { notification } from 'antd';
 
 
 
@@ -18,6 +18,7 @@ export default function HandleForm() {
     const [isList, setIsList] = useState([]);
     const [isButtonVisible, setIsButtonVisible] = useState(false);
 
+    const [clickedItems, setClickedItems] = useState([]);
 
     const [subhandleMintButtonOn1, setSubhandleMintButtonOn] = useState(false);
 
@@ -127,13 +128,17 @@ export default function HandleForm() {
         rBTCAmount.style.color = "green"; // Set the color to green
         charCount.appendChild(rBTCAmount);
         // setCharCount(rBTCAmount);
+        console.log("error Input", handleInput)
 
         if (validateInput(handleInput)) {
             handlePreview.textContent = `${handleInput}.₿`;
             handlePreview.style.color = "white";
             placeholderPreview();
+            console.log("ERROR FREE")
 
         } else {
+            console.log("with ERROR")
+
             handlePreview.textContent = "Invalid input. Please use only lowercase letters, digits, dots, and hyphens, and ensure they are not at the beginning or end of the input.";
             handlePreview.style.color = "white";
         }
@@ -152,14 +157,16 @@ export default function HandleForm() {
         const yearsInput = document.getElementById("years-input").value;
         let isSubhandle = false; // Initialize isSubhandle as false
 
-        // if (yearsInput === "0" || yearsInput.trim() === "" || isNaN(yearsInput)) {
-        //     button.disabled = true;
-        //     button.style.backgroundColor = "#ccc";
-        //     document.query{`Selector(".years-error" ${isInvalid?"block":"hidden"}`}.style.display = "block";
-        // } else {
-        //     button.style.backgroundColor = "#007BFF";
-        //     document.quert{`Selector(".years-error" ${isInvalid?"block":"hidden"}`}.style.display = "none";
-        // }
+
+        if (yearsInput === "0" || yearsInput.trim() === "" || isNaN(yearsInput)) {
+            button.disabled = true;
+            button.style.backgroundColor = "#ccc";
+            document.querySelector(".years-error").style.display = "block";
+        } else {
+            button.style.backgroundColor = "#0056b3";
+            document.querySelector(".years-error").style.display = "none";
+        }
+
 
         // Check if the handle input contains a dot (.) indicating a subhandle
         if (handleInput.includes(".")) {
@@ -292,18 +299,41 @@ export default function HandleForm() {
         placeholderPreview();
     }
     const handleInputClick = () => {
-        if (handleInput === 'Renew Handle' || handleInput === 'Renew Subhandle') {
-            setHandleInput('');
-            setIsInscribeVisible(true);
-        }
-        // setIsInscribeVisible(true);
-        // Show the "Inscribe Ordinal" button
-        const inscribeButton = document.getElementById("inscribe-button");
-        if (inscribeButton) {
-            inscribeButton.style.display = "block";
-        }
 
-        updateLivePreview();
+        console.log("INPUT", Button)
+        const button = document.getElementById("manage-handle-button");
+        let handleInput = document.getElementById("handle-input").value;
+        const handlePreview = document.getElementById("handle-preview-text");
+        const square = document.getElementById("square");
+        const handleText = document.getElementById("handle-text");
+        if (button.textContent === 'Renew Handle' || button.textContent === 'Renew Subhandle') {
+            setHandleInput('');
+            setIsInscribeVisible(false);
+            setInputId('')
+            console.log("IF CONDITION")
+            square.style.backgroundColor = "transparent";
+
+            setIsInscribeButtonVisible(false)
+            handlePreview.textContent = ''
+            handleText.textContent = ''
+        }
+        else {
+            setIsInscribeVisible(true)
+            console.log("else CONDITION")
+
+        }
+        button.textContent = 'Register Handle'
+
+
+        // // Show the "Inscribe Ordinal" button
+        // const inscribeButton = document.getElementById("inscribe-button");
+        // if (inscribeButton) {
+        //     inscribeButton.style.display = "block";
+        // }
+        // updateLivePreview();
+        // updateCharacterCount();
+
+
     };
 
 
@@ -345,13 +375,16 @@ export default function HandleForm() {
 
             // Create and display the "Set Bitcoin Address" input and confirm button container
             if (!bitcoinAddressInputCreated) {
-                createInputAndConfirmButton("bitcoin-address-input", "Set Bitcoin Address");
+                // createInputAndConfirmButton(, );
+                setInputIdBitcoin("bitcoin-address-input");
+                setInputPlaceholderBitcoin("Set Bitcoin Address")
                 bitcoinAddressInputCreated = true;
             }
 
             // Create and display the "Transfer Handle" input and confirm button container
             if (!transferHandleInputCreated) {
-                createInputAndConfirmButton("transfer-handle-input", "Transfer Handle to Rootstock Address");
+                setInputId("transfer-handle-input");
+                setInputPlaceholder("Transfer Handle to Rootstock Address")
                 transferHandleInputCreated = true;
             }
         }
@@ -361,9 +394,10 @@ export default function HandleForm() {
 
     const handleInputChange = (e) => {
         setDisplayHandleInput(e.target.value)
-        updateCharacterCount();
+        // updateCharacterCount();
         updateInputWithPunycode();
         // placeholderPreview();
+        setButton("Register Handle")
 
         setHandleInput(e.target.value);
 
@@ -372,7 +406,11 @@ export default function HandleForm() {
             setHandleInput('');
             setIsInscribeVisible(true);
         }
-        // updateInputWithPunycode
+        else {
+            setIsInscribeButtonVisible(false);
+
+        }
+
         updateLivePreview();
     };
 
@@ -464,6 +502,17 @@ export default function HandleForm() {
         }
     };
 
+    const [inputValue, setInputValue] = useState('');
+    const [inputId, setInputId] = useState('');
+    const [inputIdBitcoin, setInputIdBitcoin] = useState('');
+    const [inputPlaceholder, setInputPlaceholder] = useState('');
+    const [inputPlaceholderBitcoin, setInputPlaceholderBitcoin] = useState('');
+
+    const handleConfirmClick = () => {
+        // Handle the input value as needed (e.g., save it, use it for something, etc.)
+        alert(`${inputPlaceholder} set to: ${inputValue}`);
+    };
+
 
     function createInputAndConfirmButton(inputId, inputPlaceholder) {
         const input = document.createElement("input");
@@ -498,7 +547,7 @@ export default function HandleForm() {
         // Add an event listener to remove the input and confirm button container when Handle input is focused
         const handleInput = document.getElementById("handle-input");
         handleInput.addEventListener("focus", function () {
-            formContainer?.removeChild(confirmButtonContainer);
+            // formContainer?.removeChild(confirmButtonContainer);
             if (inputId === "bitcoin-address-input") {
                 bitcoinAddressInputCreated = false;
             } else if (inputId === "transfer-handle-input") {
@@ -536,13 +585,16 @@ export default function HandleForm() {
 
         // Create and display the "Set Bitcoin Address" input and confirm button container
         if (!bitcoinAddressInputCreated) {
-            createInputAndConfirmButton("bitcoin-address-input", "Set Bitcoin Address");
+            setInputIdBitcoin("bitcoin-address-input");
+            setInputPlaceholderBitcoin("Set Bitcoin Address")
             bitcoinAddressInputCreated = true;
         }
 
         // Create and display the "Transfer Handle" input and confirm button container
         if (!transferHandleInputCreated) {
-            createInputAndConfirmButton("transfer-handle-input", "Transfer Handle to Rootstock Address");
+            // createInputAndConfirmButton(, );
+            setInputId("transfer-handle-input");
+            setInputPlaceholder("Transfer Handle to Rootstock Address")
             transferHandleInputCreated = true;
         }
     };
@@ -632,7 +684,7 @@ export default function HandleForm() {
     const removeSubhandleMintButton = () => {
         const subhandleMintButton = document.getElementById("subhandle-mint-button");
         if (subhandleMintButton) {
-            subhandleMintButton.parentNode.removeChild(subhandleMintButton);
+            // subhandleMintButton.parentNode.removeChild(subhandleMintButton);
             subhandleMintButtonCreated = false;
         } (false);
     };
@@ -697,7 +749,7 @@ export default function HandleForm() {
                             }
                         } else if (buttonText === "Register Handle" || buttonText === "Register Subhandle") {
                             // Hide the "Subhandle Mint" button
-                            removeSubhandleMintButton();
+                            // removeSubhandleMintButton();
 
                             // Hide the "Activate zkERC-6551" button
                             const activateButton = document.getElementById("activate-button");
@@ -716,22 +768,23 @@ export default function HandleForm() {
     const [isInscribeButtonVisible, setIsInscribeButtonVisible] = useState(false);
 
     useEffect(() => {
-        // Add an event listener to determine when the "Renew Handle" or "Renew Subhandle" button is present
-        const handleDOMSubtreeModified = () => {
-            const renewButton = document.getElementById("manage-handle-button");
-            if (renewButton && (renewButton.textContent === "Renew Handle" || renewButton.textContent === "Renew Subhandle")) {
-                setIsInscribeButtonVisible(true);
-            } else {
-                setIsInscribeButtonVisible(false);
-            }
-        };
+        // // Add an event listener to determine when the "Renew Handle" or "Renew Subhandle" button is present
+        // const handleDOMSubtreeModified = () => {
+        //     const renewButton = document.getElementById("manage-handle-button");
+        //     if (renewButton && (renewButton.textContent === "Renew Handle" || renewButton.textContent === "Renew Subhandle")) {
+        //         setIsInscribeButtonVisible(true);
+        //         console.log("SETTING TRUE VALUE")
+        //     } else {
+        //         setIsInscribeButtonVisible(false);
+        //     }
+        // };
 
-        document.addEventListener("DOMSubtreeModified", handleDOMSubtreeModified);
+        // document.addEventListener("DOMSubtreeModified", handleDOMSubtreeModified);
 
         // Clean up the event listener when the component unmounts
-        return () => {
-            document.removeEventListener("DOMSubtreeModified", handleDOMSubtreeModified);
-        };
+        // return () => {
+        //     document.removeEventListener("DOMSubtreeModified", handleDOMSubtreeModified);
+        // };
     }, []);
 
     useEffect(() => {
@@ -741,14 +794,12 @@ export default function HandleForm() {
     return (<div className="pt-[60px] ">
         <main className="max-w-[450px] relative  flex flex-col justify-start items-center">
             <h1 className="font-bold text-[32px]">HNDL Registrar</h1>
-            <div className="h-[1px]"></div>
-
-
+            <div className="h-[1px] w-[1px]"></div>
             <div className="preview-container w-full">
                 <div className={`${imageChecked ? "preview-square" : "preview-square3"}`}>
                     <div className="handle-text" id="handle-text"></div>
                     <p class="handle-preview"><span id="handle-preview-text"></span></p>
-                    <div id="square" className=" absolute top-[10px] left-[10px] w-full h-[10px]"></div>
+                    <div id="square" className=" absolute top-[10px] left-[10px] w-[10px] h-[10px]"></div>
 
                 </div>
             </div>
@@ -779,6 +830,10 @@ export default function HandleForm() {
                     placeholder="Handle or Subhandle"
                     maxLength="37"
                     value={handleInput}
+                    onClick={() => {
+                        // setIsInscribeButtonVisible(false);
+                        handleInputClick();
+                    }}
                     onChange={handleInputChange}
                 />
                 <p className="text-[12px] char-count mt-[5px]">
@@ -790,11 +845,13 @@ export default function HandleForm() {
                     <input
                         type="number"
                         id="years-input"
-                        className="w-full mr-2 "
+
+                        className="w-full h-full mr-2 "
                         placeholder="1"
                         value={yearsInput}
                         min="1"
                         onChange={(e) => {
+
                             setYearsInput(e.target.value);
                             yearsInputChange(e);
                             checkYearsInputValidity(e);
@@ -850,6 +907,51 @@ export default function HandleForm() {
                     )}
 
                 </div>
+
+                {
+                    isInscribeButtonVisible && <>
+                        <div style={{ display: "flex" }}>
+                            <input
+                                type="text"
+                                id={inputIdBitcoin}
+                                placeholder={inputPlaceholderBitcoin}
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                style={{
+                                    marginBlockEnd: "10px",
+                                    width: "100%",
+                                    marginLeft: "10px",
+                                }}
+                                onClick={handleConfirmClick}
+                            >
+                                Confirm
+                            </button>
+                        </div>
+                        <div style={{ display: "flex" }}>
+                            <input
+                                type="text"
+                                id={inputId}
+                                placeholder={inputPlaceholder}
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                style={{
+                                    marginBlockEnd: "10px",
+                                    width: "100%",
+                                    marginLeft: "10px",
+                                }}
+                                onClick={handleConfirmClick}
+                            >
+                                Confirm
+                            </button>
+                        </div>
+                    </>
+                }
                 {
                     isInscribeButtonVisible && <button
                         onClick={handleSubhandleMintButtonClick}
@@ -878,12 +980,17 @@ export default function HandleForm() {
             {isList.map((item) => {
                 return <ul className="hover:bg-[#007bff] hover:text-[#fff] cursor-pointer p-1 rounded-[5px]" onClick={(e) => {
                     // 1 = true
-                    handleInputClick();
+
+                    // if (!clickedItems.includes(item)) {
+                    //     // If the item hasn't been clicked before
+                    //     setClickedItems((prevClickedItems) => [...prevClickedItems, item]);
+                    setIsInscribeButtonVisible(true);
                     updatePreviewOnItemClick(e);
+                    // handleInputClick();
                     handleListItemClick(e)
-                    // createInscribeButton();
-                    // createSubhandleMintButton();
-                    // createActivateButton();
+                    setHandleInput(item)
+
+                    // }
                 }} id="my-handles-list text-[#000]">{item}
                 </ul>
             })}
